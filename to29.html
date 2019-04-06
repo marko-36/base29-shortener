@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+ <html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Digits to alphanumerical strings base29 shortener</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="base29.js"></script>
+        <style>@import url('https://fonts.googleapis.com/css?family=Heebo:700|Raleway');</style>
+        <style>html{font-family:'Raleway',sans-serif;letter-spacing:-0.6px} 
+            div{width:85vw;margin-bottom:2rem}
+            h1,h2,h3,th{font-family:'Heebo',helvetica,sans-serif}
+            h1{font-size:1.5rem}</style>
+    </head>
+    <body>
+        <h1>Digits to alphanumerical strings base29 shortener</h1>
+        <p><a href="https://github.com/name-status/base29-shortener">https://github.com/name-status/base29-shortener</a></p>
+        <p><a href="https://jsfiddle.net/Marko36/k0sd3v7p/">https://jsfiddle.net/Marko36/k0sd3v7p/</a></p>        
+        <script>
+            var base29;
+            for (i=1;i<40;i+=1){
+                base29 = to29(i);
+                document.write('i: <b>' + i +  '</b>,  to base29: <b>' + base29);
+                dec = from29(base29);
+                document.write('</b>, back to dec: ' + dec.toString() + '<br>');
+            }
+            for (i=100000;i<1100000;i+=25000){
+                base29 = to29(i);
+                document.write('i: <b>' + i +  '</b>,  to base29: <b>' + base29);
+                dec = from29(base29);
+                document.write('</b>, back to dec: ' + dec.toString() + '<br>');
+            }
+        </script>        
+    </body>
+</html>
