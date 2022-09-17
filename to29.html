@@ -1,36 +1,95 @@
 <!DOCTYPE html>
- <html class="no-js">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Digits to alphanumerical strings base29 shortener</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="base29.js"></script>
-        <style>@import url('https://fonts.googleapis.com/css?family=Heebo:700|Raleway');</style>
-        <style>html{font-family:'Raleway',sans-serif;letter-spacing:-0.6px} 
-            div{width:85vw;margin-bottom:2rem}
-            h1,h2,h3,th{font-family:'Heebo',helvetica,sans-serif}
-            h1{font-size:1.5rem}</style>
-    </head>
-    <body>
-        <h1>Digits to alphanumerical strings base29 shortener</h1>
-        <p><a href="https://github.com/name-status/base29-shortener">https://github.com/name-status/base29-shortener</a></p>
-        <p><a href="https://jsfiddle.net/Marko36/k0sd3v7p/">https://jsfiddle.net/Marko36/k0sd3v7p/</a></p>        
-        <script>
-            var base29;
-            for (i=1;i<40;i+=1){
-                base29 = to29(i);
-                document.write('i: <b>' + i +  '</b>,  to base29: <b>' + base29);
-                dec = from29(base29);
-                document.write('</b>, back to dec: ' + dec.toString() + '<br>');
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>base29-shortener</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Roboto');
+    </style>
+    <style>
+        html {font-family: 'Roboto', sans-serif; letter-spacing: -0.6px;font-size: 0.875rem}
+        div { width: 85vw;margin-bottom: 2rem}
+        h1,h2,h3,h4 {font-family: 'Roboto', helvetica, sans-serif; font-size: 1.125rem; font-weight: normal;}
+        h1 {font-size: 1.125rem}
+    </style>
+</head>
+
+<body>
+    <h1>base29-shortener</h1>
+    <p><a href="https://github.com/marko-36/base29-shortener">https://github.com/marko-36/base29-shortener</a><br>
+    <a href="https://bit.ly/3BqA1tc">https://jsfiddle.net/Marko36/k0sd3v7p/</a></p>
+    <p><b>Try reloading the page!</b></p>
+    <script>
+        const baseKey = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'; //Secret key
+
+        const to29 = (i, baseKey, minLength = 2) => {
+            let shift = Math.floor(Math.random() * baseKey.length)
+            let tempKey = baseKey.substring(shift, baseKey.length) + baseKey.substring(0, shift);
+            shift = baseKey.substring(shift, shift + 1);
+            const minVal = Math.pow(tempKey.length, minLength - 2);
+            i += minVal;
+            var sLen = Math.floor(Math.log(i) / Math.log(tempKey.length)) + 1;
+            var s = '';
+            for (let ex = sLen - 1; ex > -1; --ex) {
+                s += tempKey.substring(Math.floor(i / Math.pow(tempKey.length, ex)), Math.floor(i / Math.pow(tempKey.length, ex)) + 1);
+                i = i % Math.pow(tempKey.length, ex);
             }
-            for (i=100000;i<1100000;i+=25000){
-                base29 = to29(i);
-                document.write('i: <b>' + i +  '</b>,  to base29: <b>' + base29);
-                dec = from29(base29);
-                document.write('</b>, back to dec: ' + dec.toString() + '<br>');
+            return shift + s;
+        }
+
+        const from29 = (s, baseKey, minLength = 2) => {
+            let shift = baseKey.indexOf(s.substring(0, 1));
+            let tempKey = baseKey.substring(shift, baseKey.length) + baseKey.substring(0, shift);
+            s = s.substring(1, s.length);
+            const minVal = Math.pow(tempKey.length, minLength - 2);
+            var i = 0;
+            for (let ex = 0; ex < s.length; ++ex) {
+                i += tempKey.indexOf(s.substring(ex, ex + 1)) * Math.pow(tempKey.length, s.length - 1 - ex);
             }
-        </script>        
-    </body>
+            return i - minVal;
+        }
+    </script>
+
+    <h4>☐ En/decoding of '1' using base29. There are [baseKey.length] randomly chosen possibilites to represent any
+    number:</h4>
+    <script>for (let i = 1; i < 6; i++) {
+    document.write(`i=<b>${1}</b>    encoded: <b>${to29(1, baseKey)}</b>, decoded back: <b>${from29(to29(1, baseKey), baseKey)}</b><br>`)
+    }</script>
+    ...
+
+    <h4>☐ En/decoding of numbers 2-10:</h4>
+    <script>for (let i = 2; i < 11; i++) {
+    document.write(`i=<b>${i}</b>   encoded: <b>${to29(i, baseKey)}</b>, decoded back: <b>${from29(to29(i, baseKey), baseKey)}</b><br>`)
+    }</script>
+
+    <h4>☐ En/decoding of numbers 1001-1010:</h4>
+    <script>for (let i = 1001; i < 1011; i++) {
+    document.write(`i=<b>${i}</b>    encoded: <b>${to29(i, baseKey)}</b>, decoded back: <b>${from29(to29(i, baseKey), baseKey)}</b><br>`)
+    }</script>
+
+    <h4>☐ En/decoding of numbers between 10K and 23.7B:</h4>
+    <script>for (let i = 10000; i < 100000000000; i = Math.floor(Math.pow(i, 1.1))) {
+    document.write(`i=<b>${i}</b>    encoded: <b>${to29(i, baseKey)}</b>, decoded back: <b>${from29(to29(i, baseKey), baseKey)}</b><br>`)
+    }</script>
+
+    <h4>☐ En/decoding of 1 billion using base29.There are [baseKey.length] randomly chosen possibilites to represent any
+    number:</h4>
+    <script>for (let i = 1; i < 6; i++) {
+    document.write(`i=<b>${100000000000000}</b>    encoded: <b>${to29(100000000000000, baseKey)}</b>, decoded back: <b>${from29(to29(100000000000000, baseKey), baseKey)}</b><br>`);
+    }</script>
+
+    <h4>☐ En/decoding of '1' using base29. And enforcing minimal length using optional [minLength] parameter to 5:</h4>
+    <script>for (let i = 0; i < 6; i++) {
+    document.write(`i=<b>${1000}</b>    encoded: <b>${to29(1000, baseKey, 5)}</b>, decoded back: <b>${from29(to29(1000, baseKey, 5), baseKey, 5)}</b><br>`)
+    }</script>
+
+    <h4>☐ En/decoding of '0' using base29.</h4>
+    <script>for (let i = 1; i < 6; i++) {
+    document.write(`i=<b>${0}</b>    encoded: <b>${to29(0, baseKey)}</b>, decoded back: <b>${from29(to29(0, baseKey), baseKey)}</b><br>`)
+    }</script><br><br>
+</body>
 </html>
