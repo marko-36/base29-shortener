@@ -1,31 +1,29 @@
 const baseKey = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'; //Secret key
 
 const to29 = (i, baseKey, minLength = 2) => {
-  let shift = Math.floor(Math.random() * baseKey.length)
-  let tempKey = baseKey.substring(shift, baseKey.length) + baseKey.substring(0, shift);
-  shift = baseKey.substring(shift, shift+1);    
-  const minVal = Math.pow(tempKey.length, minLength-2);
+  const shift = Math.floor(Math.random() * baseKey.length);
+  let tempKey = baseKey.substring(shift) + baseKey.substring(0, shift);
+  const minVal = Math.pow(tempKey.length, minLength - 2);
   i += minVal;
-  var sLen = Math.floor(Math.log(i) / Math.log(tempKey.length)) + 1;
-  var s = '';
-  for (let ex = sLen - 1; ex > -1; --ex) {
-    s += tempKey.substring(Math.floor(i / Math.pow(tempKey.length, ex)), Math.floor(i / Math.pow(tempKey.length, ex)) + 1);
-    i = i % Math.pow(tempKey.length, ex);
+  let s = '';
+  for (let ex = Math.floor(Math.log(i) / Math.log(tempKey.length)); ex >= 0; ex--) {
+    const quotient = Math.floor(i / Math.pow(tempKey.length, ex));
+    s += tempKey[quotient];
+    i %= Math.pow(tempKey.length, ex);
   }
-  return shift+s;
-}
+  const shiftChar = baseKey[shift];
+  return shiftChar + s;
+};
 
 const from29 = (s, baseKey, minLength = 2) => {
-  let shift = baseKey.indexOf(s.substring(0, 1));
-  let tempKey = baseKey.substring(shift, baseKey.length) + baseKey.substring(0, shift);
-  s=s.substring(1, s.length);
-  const minVal = Math.pow(tempKey.length, minLength-2);
-  var i = 0;
-  for (let ex = 0; ex < s.length; ++ex) {
-    i += tempKey.indexOf(s.substring(ex, ex + 1)) * Math.pow(tempKey.length, s.length - 1 - ex);
-  }
-  return i - minVal;
-}
+  const shift = baseKey.indexOf(s[0]);
+  const tempKey = baseKey.substring(shift) + baseKey.substring(0, shift);
+  s = s.substring(1);
+  const minVal = Math.pow(tempKey.length, minLength - 2);
+  let result = 0;
+  for (let ex = s.length - 1; ex >= 0; ex--) {result += tempKey.indexOf(s[ex]) * Math.pow(tempKey.length, s.length - 1 - ex);}
+  return result - minVal;
+};
 
 //  DEMO
 
